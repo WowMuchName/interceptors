@@ -1,4 +1,5 @@
 # Interceptors
+[![Build Status](https://travis-ci.org/WowMuchName/interceptors.svg?branch=master)](https://travis-ci.org/WowMuchName/interceptors)
 
 ## About
 Inspired by Java method-interceptors, this package provides decorators that add method- an property-access-interception to your Typescript projects.
