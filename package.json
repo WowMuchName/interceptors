@@ -20,8 +20,20 @@
   "author": "Mark Albert",
   "license": "MIT",
   "keywords": [
-    
+    "interceptor",
+    "decorator",
+    "proxy",
+    "aop",
+    "aspects"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WowMuchName/interceptors.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WowMuchName/interceptors/issues"
+  },
+  "homepage": "https://github.com/WowMuchName/interceptors",
   "devDependencies": {
     "@types/chai": "^4.1.3",
     "@types/mocha": "^5.2.2",
