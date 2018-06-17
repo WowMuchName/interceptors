@@ -236,7 +236,8 @@ add(1, 2) = 3
 Take a look at the test folder for additional usage examples.
 
 ## Api
-TODO
+Locally under <i>node_modules/interceptors/documentation/index.html</i> or 
+[online](https://unpkg.com/interceptors@0.9.0/documentation/index.html)
 
 ## License
 

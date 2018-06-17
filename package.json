@@ -1,6 +1,6 @@
 {
   "name": "interceptors",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Java like interceptors for Typescript",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "test:watch": "mocha --watch --watch-extensions ts --reporter min --require ts-node/register test/*.ts",
     "test:coverage": "nyc --extension .ts npm test && nyc report --reporter=html --reporter=lcov",
     "build": "tsc",
-    "build:release": "npm run clean && npm run test:coverage && npm run lint && npm run build && npm run minify && npm run docs && npm run build:web && npm run minify:web",
+    "build:release": "npm run clean && npm run test:coverage && npm run lint && npm run build && npm run minify && npm run docs",
     "build:watch": "tsc --watch",
     "build:web": "tsc --module es6 --declaration false --outDir web",
     "lint": "tslint -p tsconfig.json -e test/*.ts",
