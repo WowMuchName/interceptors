@@ -1,0 +1,40 @@
+{
+  "name": "interceptors",
+  "version": "0.9.0",
+  "description": "Java like interceptors for Typescript",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --require ts-node/register test/*.ts",
+    "test:watch": "mocha --watch --watch-extensions ts --reporter min --require ts-node/register test/*.ts",
+    "test:coverage": "nyc --extension .ts npm test && nyc report --reporter=html --reporter=lcov",
+    "build": "tsc",
+    "build:release": "npm run clean && npm run test:coverage && npm run lint && npm run build && npm run minify && npm run docs && npm run build:web && npm run minify:web",
+    "build:watch": "tsc --watch",
+    "build:web": "tsc --module es6 --declaration false --outDir web",
+    "lint": "tslint -p tsconfig.json -e test/*.ts",
+    "minify": "uglifyjs index.js -o index.js",
+    "minify:web": "uglifyjs web/index.js -o web/index.min.js",
+    "docs": "typedoc --out documentation --name Interceptors --mode file lib/index.ts",
+    "clean": "rimraf .nyc_output coverage documentation web index.js index.d.ts index.js.map test/*.js test/*.d.ts test/*.js.map lib/*.js lib/*.d.ts lib/*.js.map"
+  },
+  "author": "Mark Albert",
+  "license": "MIT",
+  "keywords": [
+    
+  ],
+  "devDependencies": {
+    "@types/chai": "^4.1.3",
+    "@types/mocha": "^5.2.2",
+    "chai": "^4.1.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
+    "reflect-metadata": "^0.1.12",
+    "rimraf": "^2.6.2",
+    "ts-node": "^6.1.1",
+    "tslint": "^5.10.0",
+    "typedoc": "^0.11.1",
+    "typescript": "^2.9.1",
+    "uglify-es": "^3.3.9"
+  }
+}
