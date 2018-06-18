@@ -1,5 +1,9 @@
 # Interceptors
 [![Build Status](https://travis-ci.org/WowMuchName/interceptors.svg?branch=master)](https://travis-ci.org/WowMuchName/interceptors)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/23452086205aebe87bbc/test_coverage)](https://codeclimate.com/github/WowMuchName/interceptors/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/23452086205aebe87bbc/maintainability)](https://codeclimate.com/github/WowMuchName/interceptors/maintainability)
+[![Known Vulnerabilities](https://snyk.io/test/github/WowMuchName/interceptors/badge.svg?targetFile=package.json)](https://snyk.io/test/github/WowMuchName/interceptors?targetFile=package.json)
+[![Dependencies](https://david-dm.org/WowMuchName/interceptors.svg)](https://david-dm.org/WowMuchName/interceptors#info=dependencies)
 
 ## About
 Inspired by Java method-interceptors, this package provides decorators that add method- and property-access-interception to your Typescript projects.
