@@ -2,10 +2,13 @@
 [![Build Status](https://travis-ci.org/WowMuchName/interceptors.svg?branch=master)](https://travis-ci.org/WowMuchName/interceptors)
 
 ## About
-Inspired by Java method-interceptors, this package provides decorators that add method- an property-access-interception to your Typescript projects.
+Inspired by Java method-interceptors, this package provides decorators that add method- and property-access-interception to your Typescript projects.
+They are powered by ES6 [Proxies](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Proxy#Syntax).
 
 ## Requirements
 Interceptors depend on ES6 and Reflect-Metadata. No other dependencies are required.
+
+[Supported platforms](http://kangax.github.io/compat-table/es6/#test-Proxy)
 
 ## Installation
 
@@ -61,6 +64,7 @@ class TestClass {
     }
 }
 ```
+
 
 #### Return value modification
 Using <i>@around</i>:
@@ -198,8 +202,6 @@ class TestClass {
 }
 ```
 
-
-
 ## Realistic examples
 While the above examples show how to use the interceptors at the most basic level, in
 reality you will want to wrap the functionality into your own decorator to achieve something
@@ -234,7 +236,7 @@ add(1, 2) = 3
 ```
 
 ## More examples
-Take a look at the test folder for additional usage examples.
+For additional usage examples take a look at the [tests](https://github.com/WowMuchName/interceptors/blob/master/test/test.ts) or the [Api-Docs](https://unpkg.com/interceptors@0.9.0/documentation/index.html).
 
 ## Api
 Locally under <i>node_modules/interceptors/documentation/index.html</i> or 

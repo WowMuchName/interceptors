@@ -77,31 +77,137 @@ export interface IAccess {
 }
 
 /**
- * Interceptor for method invocations and property accesses.
- * @param {Invocation} invocation provide information about the invocation and allows the
+ * Interceptor for method invocations. It is used with the <i>@around</i>-decorator.
+ * @param {IInvocation} invocation provide information about the invocation and allows the
  * interceptor to forward the call to the next handler.
- * @returns {any} The result of the method invocation (invocation),
- * the property value (getter) or true/false (setter)
+ * @returns {any} The result of the method invocation
+ * @example
+ * ```ts
+ *
+ * invocation => {
+ *   // Access and modify argument
+ *   invocation.args = ["Modified", "Arguments"];
+ *
+ *   // Access and modify 'this'-context of the called method
+ *   invocation.this = that;
+ *
+ *   // Delegate call
+ *   let result: any = invocation.next();
+ *
+ *   // Modify result
+ *   result += 1;
+ *   return result;
+ * }
+ * ```
+ * @see around
+ * @see AfterInterceptor
+ * @see BeforeInterceptor
  */
 export type MethodInterceptor = (invocation: IInvocation) => any;
 
+/**
+ * Interceptor for property-access. It is used with the <i>access</i>-decorator.
+ * @param {IAccess} access provide information about the property-access and allows the
+ * interceptor to forward the call to the next handler.
+ * @returns {any} For getters (access.setter === false), this is the value of the property,
+ * for setters true or false
+ * @example
+ * ```ts
+ *
+ * access => {
+ *   if(access.setter) {
+ *     // Overwrite the value the property is to be set to
+ *     access.value = "Hello"
+ *     return access.next();
+ *   }
+ *   // getter
+ *   let value = access.next();
+ *
+ *   // Modify result
+ *   value += 1;
+ *   return value;
+ * }
+ * ```
+ * @see access
+ * @see GetterInterceptor
+ * @see SetterInterceptor
+ */
 export type AccessInterceptor = (access: IAccess) => any;
 
-export type GetterInterceptor = (result: any) => any;
+/**
+ * Interceptor for a property getter. It is used with the <i>@getter</i>-decorator.
+ * @param {any} value of the property. This is (the potentially modified) value of the
+ * property.
+ * @returns {any} Modified value of the property.
+ * @example
+ * ```ts
+ *
+ * value => {
+ *   // Modify result
+ *   value += 1;
+ *   return value;
+ * }
+ * ```
+ * @see getter
+ * @see AccessInterceptor
+ */
+export type GetterInterceptor = (value: any) => any;
 
+/**
+ * Interceptor for a property setter. It is used with the <i>@setter</i>-decorator.
+ * @param {any} value to be assigned to the property (this has potentially already been
+ * modified by previous interceptor)
+ * @returns {any} Modified value to be assigned to the property.
+ * @example
+ * ```ts
+ *
+ * value => {
+ *   // Modify assigned value
+ *   value += 1;
+ *   return value;
+ * }
+ * ```
+ * @see setter
+ * @see AccessInterceptor
+ */
 export type SetterInterceptor = (value: any) => any;
 
 /**
- * Interceptor that is invoked after a invocation / access has completed.
- * @param {any} result Result of the invocation / value of the property
- * @returns {any} Modified result of the invocation / value of the property
+ * Interceptor that is invoked after a invocation has completed. It is used
+ * with the <i>@after</i>-decorator.
+ * @param {any} result of the invocation
+ * @returns {any} Modified result of the invocation
+ * @example
+ * ```ts
+ *
+ * result => {
+ *   // Modify method result
+ *   result += 1;
+ *   return result;
+ * }
+ * ```
+ * @see after
+ * @see MethodInterceptor
  */
 export type AfterInterceptor = (result: any) => any;
+
 /**
- * Interceptor that is invoked before a invocation / access.
- * @param {any} args Arguments of the method invocation /
- * value to be assigned to a property (setter) / empty array (getter)
- * @returns {any} Modified arguments
+ * Interceptor that is invoked before a method invocation. It is used
+ * with the <i>@before</i>-decorator.
+ * @param {any[]} args Arguments of the method invocation
+ * @returns {any[]} Modified arguments
+ * @example
+ * ```ts
+ *
+ * args => {
+ *   // Modify method arguments
+ *   args.push("Additional argument");
+ *   // Or swap them
+ *   return ["Replacement", "Argument"];
+ * }
+ * ```
+ * @see after
+ * @see MethodInterceptor
  */
 export type BeforeInterceptor = (args: any[]) => any[];
 
@@ -121,7 +227,43 @@ type ProxyData = Map < string, Override > ;
  * @hidden
  */
 const metaKey: string = "proxy-data";
+/**
+ * @hidden
+ */
+function createOverrideOnMember(targetClass: any, member: string): Override {
+    let data: ProxyData = Reflect.getMetadata(metaKey, targetClass);
+    if (!data) {
+        Reflect.defineMetadata(metaKey, data = new Map(), targetClass);
+    }
+    let override = data.get(member);
+    if (!override) {
+        // If descriptor is supplied, this is a MethodDecorator, otherwise
+        // it is a PropertyDecorator
+        data.set(member, override = new Override());
+    }
+    return override;
+}
 
+/**
+ * Root decorator for classes. This is <b>required</b> on classes that use interceptors.
+ *
+ * @see around
+ * @see after
+ * @see before
+ * @see access
+ * @see getter
+ * @see setter
+ * @example
+ * ```ts
+ *
+ * args => {
+ *   // Modify method arguments
+ *   args.push("Additional argument");
+ *   // Or swap them
+ *   return ["Replacement", "Argument"];
+ * }
+ * ```
+ */
 export function proxy() {
     return (targetClass: any): any => {
         const data: ProxyData = Reflect.getMetadata(metaKey, targetClass);
@@ -280,19 +422,11 @@ export function proxy() {
     };
 }
 
-function createOverrideOnMember(targetClass: any, member: string): Override {
-    let data: ProxyData = Reflect.getMetadata(metaKey, targetClass);
-    if (!data) {
-        Reflect.defineMetadata(metaKey, data = new Map(), targetClass);
-    }
-    let override = data.get(member);
-    if (!override) {
-        // If descriptor is supplied, this is a MethodDecorator, otherwise
-        // it is a PropertyDecorator
-        data.set(member, override = new Override());
-    }
-    return override;
-}
+/**
+ * Decorator for intercepting a method.
+ * @param {MethodInterceptor[]} interceptors To apply to this method or property
+ * @see MethodInterceptor
+ */
 
 export function around(...interceptors: MethodInterceptor[]): MethodDecorator & PropertyDecorator {
     return function < T > (
@@ -303,6 +437,11 @@ export function around(...interceptors: MethodInterceptor[]): MethodDecorator & 
     };
 }
 
+/**
+ * Decorator for intercepting a read/write property-access.
+ * @param {AccessInterceptor[]} interceptors To apply to this method or property
+ * @see AccessInterceptor
+ */
 export function access(...interceptors: AccessInterceptor[]): MethodDecorator & PropertyDecorator {
     return function < T > (
         target: any,
@@ -312,6 +451,11 @@ export function access(...interceptors: AccessInterceptor[]): MethodDecorator & 
     };
 }
 
+/**
+ * Decorator for intercepting after a method invocation.
+ * @param {AfterInterceptor[]} interceptors To apply to this method or property
+ * @see AfterInterceptor
+ */
 export function after(...interceptors: AfterInterceptor[]) {
     const aroundInterceptors: MethodInterceptor[] = [];
     for (const afterInterceptor of interceptors) {
@@ -322,6 +466,11 @@ export function after(...interceptors: AfterInterceptor[]) {
     return around(...aroundInterceptors);
 }
 
+/**
+ * Decorator for intercepting before a method invocation.
+ * @param {BeforeInterceptor[]} interceptors To apply to this method or property
+ * @see BeforeInterceptor
+ */
 export function before(...interceptors: BeforeInterceptor[]) {
     const aroundInterceptors: MethodInterceptor[] = [];
     for (const beforeInterceptor of interceptors) {
@@ -333,6 +482,11 @@ export function before(...interceptors: BeforeInterceptor[]) {
     return around(...aroundInterceptors);
 }
 
+/**
+ * Decorator for intercepting a property read-access.
+ * @param {GetterInterceptor[]} interceptors To apply to this method or property
+ * @see GetterInterceptor
+ */
 export function getter(...interceptors: GetterInterceptor[]) {
     const accessInterceptors: AccessInterceptor[] = [];
     for (const getterInterceptor of interceptors) {
@@ -346,6 +500,11 @@ export function getter(...interceptors: GetterInterceptor[]) {
     return access(...accessInterceptors);
 }
 
+/**
+ * Decorator for intercepting a property write-access.
+ * @param {SetterInterceptor[]} interceptors To apply to this method or property
+ * @see SetterInterceptor
+ */
 export function setter(...interceptors: SetterInterceptor[]) {
     const accessInterceptors: AccessInterceptor[] = [];
     for (const setterInterceptor of interceptors) {
