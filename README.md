@@ -245,7 +245,7 @@ For additional usage examples take a look at the [tests](https://github.com/WowM
 
 ## Api
 Locally under <i>node_modules/interceptors/documentation/index.html</i> or 
-[online](https://unpkg.com/interceptors@0.9.0/documentation/index.html)
+[online](https://unpkg.com/interceptors/documentation/index.html)
 
 ## License
 
